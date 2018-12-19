@@ -111,10 +111,10 @@ func writeRowsOverwrite(db *sql.DB, n int64) {
 	j = 0
 	for i = 0; i < n; i++ {
 		ss := makeRandomString()
-		b.WriteString(fmt.Sprintf("('%s', %d, '%s') ON CONFLICT (key) DO UPDATE SET hallo = %d, s = '%s'\n",
-			"K"+strconv.FormatInt(i, 10), j, ss, j, ss))
+		b.WriteString(fmt.Sprintf("('%s', %d, '%s')\n",
+			"K"+strconv.FormatInt(i, 10), j, ss))
 		if i%10000 == 0 {
-			b.WriteString(";")
+			b.WriteString("ON CONFLICT (key) DO UPDATE SET hallo = EXCLUDED.hallo, s = EXCLUDED.s;")
 			startTime := time.Now()
 			_, err := db.ExecContext(context.Background(), b.String())
 			endTime := time.Now()
