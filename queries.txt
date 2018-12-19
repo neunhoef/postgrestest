@@ -1,0 +1,7 @@
+CREATE USER max WITH LOGIN
+GRANT ALL ON t TO max
+
+CREATE TABLE t (key VARCHAR(30) UNIQUE, Hallo int, s VARCHAR(1536));
+
+INSERT INTO t VALUES ('max', 2, 'asdhauihsd fhsudfhuishfsdfs') ON CONFLICT (key) DO UPDATE SET hallo = 3, s = 'hi there';
+
