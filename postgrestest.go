@@ -91,8 +91,54 @@ func writeRows(db *sql.DB, n int64) {
 	}
 	sort.Slice(times, func(a, b int) bool { return times[a] < times[b] })
 	fmt.Printf(`Median: %d
-90%ile: %d
-99%ile: %d
+90%%ile: %d
+99%%ile: %d
+min   : %d
+max   : %d
+`, times[int(le/2)], times[int(float64(le)*0.9)], times[int(float64(le)*0.99)],
+		times[0], times[le-1])
+}
+
+func writeRowsOverwrite(db *sql.DB, n int64) {
+	var b strings.Builder
+	b.WriteString("INSERT INTO t (key, hallo, s) VALUES\n")
+	le := n / 10000
+	times := make([]int64, le, le)
+	var (
+		i int64
+		j int64
+	)
+	j = 0
+	for i = 0; i < n; i++ {
+		ss := makeRandomString()
+		b.WriteString(fmt.Sprintf("('%s', %d, '%s') ON CONFLICT (key) DO UPDATE SET hallo = %d, s = '%s'\n",
+			"K"+strconv.FormatInt(i, 10), j, ss, j, ss))
+		if i%10000 == 0 {
+			b.WriteString(";")
+			startTime := time.Now()
+			_, err := db.ExecContext(context.Background(), b.String())
+			endTime := time.Now()
+			dur := endTime.Sub(startTime)
+			times[i/10000] = int64(dur)
+			if err != nil {
+				fmt.Printf("Error from query: %v\n", err)
+			} else {
+				fmt.Printf("Time for insert 10000: %v\n", dur)
+			}
+			b.Reset()
+			b.WriteString("INSERT INTO t (key, hallo, s) VALUES\n")
+		} else {
+			b.WriteString(",\n")
+		}
+		j = j + 99991 // a prime
+		for j > n {
+			j -= n
+		}
+	}
+	sort.Slice(times, func(a, b int) bool { return times[a] < times[b] })
+	fmt.Printf(`Median: %d
+90%%ile: %d
+99%%ile: %d
 min   : %d
 max   : %d
 `, times[int(le/2)], times[int(float64(le)*0.9)], times[int(float64(le)*0.99)],
@@ -145,6 +191,8 @@ func main() {
 		initDatabase(db)
 	case "insert":
 		writeRows(db, 10000000)
+	case "upsert":
+		writeRowsOverwrite(db, 10000000)
 	default:
 		printUsage()
 	}
