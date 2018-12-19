@@ -171,6 +171,7 @@ func printUsage() {
 	fmt.Println(`Usage:
 	postgrestest init         - to initialize the database
 	postgrestest insert       - insert 10000000 rows
+	postgrestest upsert       - upsert 10000000 rows
 `)
 }
 
