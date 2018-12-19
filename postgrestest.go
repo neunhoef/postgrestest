@@ -71,7 +71,7 @@ func writeRows(db *sql.DB, n int64) {
 			"K"+strconv.FormatInt(i, 10),
 			int64(i),
 			makeRandomString()))
-		if i%10000 == 0 {
+		if i%10000 == 9999 {
 			b.WriteString(";")
 			startTime := time.Now()
 			_, err := db.ExecContext(context.Background(), b.String())
@@ -90,13 +90,18 @@ func writeRows(db *sql.DB, n int64) {
 		}
 	}
 	sort.Slice(times, func(a, b int) bool { return times[a] < times[b] })
+	var sum int64
+	for i = 0; i < le; i++ {
+	  sum += times[i]
+	}
 	fmt.Printf(`Median: %d
 90%%ile: %d
 99%%ile: %d
 min   : %d
 max   : %d
+Avg   : %d
 `, times[int(le/2)], times[int(float64(le)*0.9)], times[int(float64(le)*0.99)],
-		times[0], times[le-1])
+		times[0], times[le-1], int64(sum / le))
 }
 
 func writeRowsOverwrite(db *sql.DB, n int64) {
@@ -113,7 +118,7 @@ func writeRowsOverwrite(db *sql.DB, n int64) {
 		ss := makeRandomString()
 		b.WriteString(fmt.Sprintf("('%s', %d, '%s')\n",
 			"K"+strconv.FormatInt(j, 10), j, ss))
-		if i%10000 == 0 {
+		if i%10000 == 9999 {
 			b.WriteString("ON CONFLICT (key) DO UPDATE SET hallo = EXCLUDED.hallo, s = EXCLUDED.s;")
 			startTime := time.Now()
 			_, err := db.ExecContext(context.Background(), b.String())
@@ -136,13 +141,18 @@ func writeRowsOverwrite(db *sql.DB, n int64) {
 		}
 	}
 	sort.Slice(times, func(a, b int) bool { return times[a] < times[b] })
+	var sum int64
+	for i = 0; i < le; i++ {
+	  sum += times[i]
+	}
 	fmt.Printf(`Median: %d
 90%%ile: %d
 99%%ile: %d
 min   : %d
 max   : %d
+Avg   : %d
 `, times[int(le/2)], times[int(float64(le)*0.9)], times[int(float64(le)*0.99)],
-		times[0], times[le-1])
+		times[0], times[le-1], int64(sum / le))
 }
 
 func showData(db *sql.DB) error {
