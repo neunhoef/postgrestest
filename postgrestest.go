@@ -81,7 +81,7 @@ func writeRows(db *sql.DB, n int64) {
 			if err != nil {
 				fmt.Printf("Error from query: %v\n", err)
 			} else {
-				fmt.Printf("Time for insert 10000: %v\n", dur)
+				fmt.Printf("Time for insert 10000 (%d/%d): %v\n", i, n, dur)
 			}
 			b.Reset()
 			b.WriteString("INSERT INTO t (key, hallo, s) VALUES\n")
@@ -123,7 +123,7 @@ func writeRowsOverwrite(db *sql.DB, n int64) {
 			if err != nil {
 				fmt.Printf("Error from query: %v\n", err)
 			} else {
-				fmt.Printf("Time for insert 10000: %v\n", dur)
+				fmt.Printf("Time for insert 10000 (%d/%d): %v\n", i, n, dur)
 			}
 			b.Reset()
 			b.WriteString("INSERT INTO t (key, hallo, s) VALUES\n")
