@@ -30,7 +30,7 @@ var writeDocs = function(n) {
       times.push(t2-t);
     }
   }
-  times = times.sort();
+  times = times.sort(function(a, b) { return a-b; });
   print(" Median:", times[Math.floor(times.length / 2)], "\n",
         "90%ile:", times[Math.floor(times.length * 0.90)], "\n",
         "99%ile:", times[Math.floor(times.length * 0.99)], "\n",
@@ -58,7 +58,7 @@ var writeDocsOverwrite = function(n) {
       j -= n;
     }
   }
-  times = times.sort();
+  times = times.sort(function(a, b) { return a-b; });
   print(" Median:", times[Math.floor(times.length / 2)], "\n",
         "90%ile:", times[Math.floor(times.length * 0.90)], "\n",
         "99%ile:", times[Math.floor(times.length * 0.99)], "\n",
@@ -87,7 +87,7 @@ var randomReads = function(m, n) {
     l = l.sort();
     caches.push([l[0],l[50],l[90],l[99]]);
   }
-  firsts = firsts.sort();
+  firsts = firsts.sort(function(a, b) { return a-b; });
   print("Firsts:\n",
         "Median:", firsts[Math.floor(firsts.length / 2)], "\n",
         "90%ile:", firsts[Math.floor(firsts.length * 0.90)], "\n",
